@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spielplan</title>
+</head>
+    <body onload="init()">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta>
+        <h1>Spielplan</h1>
+        <div class="class_gridContainer">
+            <div class="class_right">
+                class_right             
+                    <p>Spielerliste: </p>
+                    <li>
+                        <option>Test Objekt 1</option>
+                        <option>Test Object 2</option>
+                    </li>                
+                    <input type="button" onclick="newPlayer()" value="Neuer Spieler">
+                <div class="class_hidden">
+                    //CheckBox mit SpielerListe füllen
+                    <input type="text" id="input_newPlayerName">
+                    <input type="button" onclick="addPlayer()" id="input_sendNewPlayerName" value="Hinzufügen">
+                </div>
+            </div>
+            <div>
+                class_mid
+            </div>
+            <div class="class_left">
+                class_left
+                <input type="button" onclick="newMatch()" value="Neuer Spielplan">
+                <div class="class_hidden" id="div_newMatch">
+                    <input type="checkbox" id="id_Hans" value="Hans">
+                    <label for="id_Hans">Hans</label>
+                    <input type="checkbox" id="id_Dieter">
+                    <label for="id_Dieter">Dieter</label>
+                    <select>
+                        <option>Minecraft</option>
+                        <option>Fifa</option>
+                        <option>Mariokart</option>
+                    </select>                
+                    <input type="hidden" id="gameTitle"> <!-- DropdownValue-->
+                    <input type="button" onclick="addMatch()" value="Hinzufügen"> 
+                </div>
+            </div>
+            <!--div>
+                <input type="button" onclick="send()" value="send">
+                <p>Server antwort: </p>
+                <p id="id_response">...</p>
+            </div-->
+        </div>
+    </body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    /*init() {
+        //TIMER: Spielerliste sync
+        //INIT: Spielerliste abfragen
+        $.ajax
+        ({            
+            type: 'GET',
+            url: 'http://localhost:10000/newPlayer',
+            contentType : 'application/json',
+            dataType : 'json',
+            headers: {"Accepts": "text/plain; charset=utf-8"},
+            data: {
+                "name": name,
+                "wins": 0,
+            },
+
+            success:  function(data)
+            {
+                document.getElementById("id_response").innerHTML = data;
+            },
+
+            error: function(error)
+            {
+                document.getElementById("id_response").innerHTML = error;
+            }         
+        })
+    }*/
+
+    function newPlayer() {
+        console.log("Send()");
+        document.getElementById("input_newPlayerName").style.visibility = "visible"
+        document.getElementById("input_sendNewPlayerName").style.visibility = "visible"
+    }
+
+    function addPlayer() {
+        document.getElementById("input_newPlayerName").style.visibility = "hidden"
+        document.getElementById("input_sendNewPlayerName").style.visibility = "hidden"
+        
+        //SERVER REQUEST !!!
+        $.ajax
+        ({            
+            type: 'GET',
+            url: 'http://localhost:10000/newPlayer',
+            contentType : 'application/json',
+            dataType : 'json',
+            headers: {"Accepts": "text/plain; charset=utf-8"},
+            data: {
+                "name": name,
+                "wins": 0,
+            },
+
+            success:  function(data)
+            {
+                document.getElementById("id_response").innerHTML = data;
+            },
+
+            error: function(error)
+            {
+                document.getElementById("id_response").innerHTML = error;
+            }         
+        })
+
+
+    }
+
+    function newMatch() {
+        document.getElementById("div_newMatch").style.visibility = "visible"
+    }
+
+    function addMatch() {
+        document.getElementById("div_newMatch").style.visibility = "hidden"
+    }
+
+    function send()
+    {
+        console.log("Send()");
+        $.ajax
+        ({            
+            type: 'GET',
+            url: 'http://localhost:10000/page1',
+            contentType : 'application/json',
+            dataType : 'json',
+            headers: {"Accepts": "text/plain; charset=utf-8"},
+            data: {
+                "id": 1,
+                "name": "emil",
+                "data3": "value3",
+            },
+
+            success:  function(data)
+            {
+                document.getElementById("id_response").innerHTML = data;
+            },
+
+            error: function()
+            {
+                document.getElementById("id_response").innerHTML = "error";
+            }         
+        })
+    }
+
+</script>
+
+<style>
+    .class_gridContainer {
+        display: grid;
+        gap: 10px;
+    }
+
+    .class_hidden
+    {
+        visibility: hidden;
+    }
+
+    .class_right
+    {
+        grid-column: 3;
+    }
+
+    .class_mid
+    {
+        grid-column: 2;
+    }
+
+    .class_left
+    {
+        grid-column: 1;
+    }
+</style>
