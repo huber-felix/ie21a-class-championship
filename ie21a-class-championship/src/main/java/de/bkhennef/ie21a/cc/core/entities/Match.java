@@ -22,7 +22,7 @@ public class Match {
 
     private String cancelledReason;
 
-    public Match(Game game, List<Player> players, boolean official) {
+    public Match(List<Player> players, Game game, boolean official) {
         this.status = MatchStatus.NOT_STARTED;
         Objects.requireNonNull(game);
         this.game = game;
