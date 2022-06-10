@@ -1,13 +1,15 @@
 package de.bkhennef.ie21a.cc.core.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Player {
 
     private final String name;
-    private List<Match> matches;
-    private List<Badge> badges;
+    private transient List<Match> matches;
+    private List<Badge> badges = new ArrayList<>();
+    private long totalWins;
 
     public Player(String name) {
         Objects.requireNonNull(name);
@@ -21,7 +23,11 @@ public class Player {
         return name;
     }
 
-    public long totalWins() {
+    public List<Badge> getBadges() {
+        return badges;
+    }
+
+    public long getTotalWins() {
         long wins = 0;
         for (Match match : this.matches) {
             if (match.getWinners().contains(this)) {
