@@ -9,17 +9,17 @@ import java.util.Objects;
 public class Match {
 
     private long id;
-    private List<Player> winners;
+    private List<Player> winners = new ArrayList<>();
 
     private final Game game;
 
-    private final List<Player> players;
+    private final List<Player> players = new ArrayList<>();
 
     private MatchStatus status;
 
     private boolean official;
-    private Instant startTime;
-    private Instant finishTime;
+    private Instant startTime = Instant.now();
+    private Instant finishTime = Instant.now();
 
     private String cancelledReason;
 
@@ -31,7 +31,6 @@ public class Match {
         if (players.isEmpty()) {
             throw new IllegalArgumentException("There is no match if there are no players");
         }
-        this.players = players;
         winners = new ArrayList<>();
         this.official = official;
     }
