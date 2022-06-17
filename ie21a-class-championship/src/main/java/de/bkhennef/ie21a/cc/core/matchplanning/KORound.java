@@ -14,7 +14,7 @@ public class KORound {
     public KORound(List<Player> players, Game game, boolean isOfficial) {
         Collections.shuffle(players);
         for (int i = 0; i < players.size(); i += 2) {
-            matches.add(new Match(List.of(players.get(i), players.get(i + 1)), game, isOfficial));
+            matches.add(new Match(List.of(players.get(i), players.get(i + 1)), game, isOfficial, 0));
         }
     }
 

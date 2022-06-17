@@ -1,7 +1,6 @@
 package de.bkhennef.ie21a.cc.core.entities;
 
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
