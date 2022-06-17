@@ -1,23 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spielplan</title>
 </head>
-    <body onload="init()">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <body onload="setI()">
         <meta>
         <h1>Spielplan</h1>
         <div class="class_gridContainer">
             <div class="class_right">
                 class_right             
                     <p>Spielerliste: </p>
-                    <li>
-                        <option>Test Objekt 1</option>
-                        <option>Test Object 2</option>
-                    </li>                
+                    <ul id="playerList"></ul>             
                     <input type="button" onclick="newPlayer()" value="Neuer Spieler">
                 <div class="class_hidden">
-                    //CheckBox mit SpielerListe füllen
                     <input type="text" id="input_newPlayerName">
                     <input type="button" onclick="addPlayer()" id="input_sendNewPlayerName" value="Hinzufügen">
                 </div>
@@ -28,11 +24,10 @@
             <div class="class_left">
                 class_left
                 <input type="button" onclick="newMatch()" value="Neuer Spielplan">
-                <div class="class_hidden" id="div_newMatch">
-                    <input type="checkbox" id="id_Hans" value="Hans">
-                    <label for="id_Hans">Hans</label>
-                    <input type="checkbox" id="id_Dieter">
-                    <label for="id_Dieter">Dieter</label>
+                <div class="class_hidden" id="div_newMatch">                    
+                    <div id="cb_playerList">
+
+                    </div>
                     <select>
                         <option>Minecraft</option>
                         <option>Fifa</option>
@@ -42,43 +37,89 @@
                     <input type="button" onclick="addMatch()" value="Hinzufügen"> 
                 </div>
             </div>
-            <!--div>
-                <input type="button" onclick="send()" value="send">
-                <p>Server antwort: </p>
-                <p id="id_response">...</p>
-            </div-->
         </div>
     </body>
 </html>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
-    /*init() {
-        //TIMER: Spielerliste sync
-        //INIT: Spielerliste abfragen
+    var allPlayers = [];
+    
+    //Get player list (each 60 sec)
+    function setI()
+    {
+        getData();
+        setInterval(getData, 60000);
+    }
+    
+    function getData() {
+        console.log("Sync data");
+
+        var jsonObj;
+        var name; //string
+        var badges; //string[]
+        var totalWins; //int
+        
         $.ajax
-        ({            
+        ({        //172.16.7.    
             type: 'GET',
-            url: 'http://localhost:10000/newPlayer',
+            url: 'http://10.10.0.147:7777/players',
             contentType : 'application/json',
             dataType : 'json',
             headers: {"Accepts": "text/plain; charset=utf-8"},
-            data: {
-                "name": name,
-                "wins": 0,
-            },
 
             success:  function(data)
             {
-                document.getElementById("id_response").innerHTML = data;
+                console.log("data received: ");
+                console.log(data)
+                //reset array with all players
+                allPlayers = [];
+
+                //Convert data before parsing to JSON obj
+                convertedData = JSON.stringify(data);
+        
+                //Parse to JSON obj
+                jsonObj = JSON.parse(convertedData);
+
+                //Loop response array
+                let list = document.getElementById("playerList");
+
+                jsonObj.forEach(player => {
+                    let li = document.createElement("li");
+
+                    li.innerText = player.name;
+
+                    list.appendChild(li);
+                    allPlayers.push(player);
+                
+
+                    console.log("\njsonObj.name: ")
+                    console.log(player.name);
+
+                    //Create player checkbox list
+                    var label = document.createElement("label");
+                    var description = document.createTextNode(player.name);
+                    var checkbox = document.createElement("input");
+
+                    checkbox.type = "checkbox";    
+                    checkbox.name = player.name;
+                    checkbox.value = player.name;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(description);
+
+                    // add the label element to your div
+                    document.getElementById('cb_playerList').appendChild(label);
+                });  
             },
 
             error: function(error)
             {
-                document.getElementById("id_response").innerHTML = error;
+                console.log("error");
+
             }         
         })
-    }*/
+    }
 
     function newPlayer() {
         console.log("Send()");
@@ -90,7 +131,7 @@
         document.getElementById("input_newPlayerName").style.visibility = "hidden"
         document.getElementById("input_sendNewPlayerName").style.visibility = "hidden"
         
-        //SERVER REQUEST !!!
+        //Send data to server
         $.ajax
         ({            
             type: 'GET',
@@ -105,12 +146,12 @@
 
             success:  function(data)
             {
-                document.getElementById("id_response").innerHTML = data;
+                console.log(data);
             },
 
             error: function(error)
             {
-                document.getElementById("id_response").innerHTML = error;
+                console.log("error");
             }         
         })
 
@@ -123,15 +164,17 @@
 
     function addMatch() {
         document.getElementById("div_newMatch").style.visibility = "hidden"
+        //Send data to server
     }
 
+    //DEBUG
     function send()
     {
         console.log("Send()");
         $.ajax
         ({            
             type: 'GET',
-            url: 'http://localhost:10000/page1',
+            url: 'http://10.10.0.147:7777/match',
             contentType : 'application/json',
             dataType : 'json',
             headers: {"Accepts": "text/plain; charset=utf-8"},
@@ -143,16 +186,15 @@
 
             success:  function(data)
             {
-                document.getElementById("id_response").innerHTML = data;
+                console.log(data);
             },
 
             error: function()
             {
-                document.getElementById("id_response").innerHTML = "error";
+                console.log("error");
             }         
         })
     }
-
 </script>
 
 <style>
