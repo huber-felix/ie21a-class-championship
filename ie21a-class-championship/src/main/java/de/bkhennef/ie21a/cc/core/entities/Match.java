@@ -73,6 +73,10 @@ public class Match {
         return Duration.between(startTime, finishTime);
     }
 
+    public MatchStatus getStatus() {
+        return status;
+    }
+
     public String getCancelledReason() {
         return cancelledReason;
     }

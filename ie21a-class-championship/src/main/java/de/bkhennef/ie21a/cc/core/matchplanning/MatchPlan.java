@@ -7,12 +7,6 @@ public interface MatchPlan {
 
     public List<Match> getMatches();
 
-    public Match getNextMatch();
-
-    public List<Match> getStartedMatches();
-
-    public List<Match> getFinishedMatches();
-
-    public List<Match> getNotStartedMatches();
+    double getProgress();
 
 }
