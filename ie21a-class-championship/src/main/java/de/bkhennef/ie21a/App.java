@@ -42,7 +42,7 @@ public class App
         dataRoot.addPlayer(player1);
         dataRoot.addPlayer(player2);
 
-        app.get("/newPlayer", ctx -> {
+        app.post("/newPlayer/", ctx -> {
             Player player = new Gson().fromJson(ctx.body(), Player.class);
             dataRoot.addPlayer(player);
             ctx.json(ctx.body());
