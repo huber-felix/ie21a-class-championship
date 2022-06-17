@@ -1,5 +1,6 @@
 package de.bkhennef.ie21a.cc.database;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import de.bkhennef.ie21a.cc.core.entities.Game;
@@ -14,6 +15,9 @@ public class DataRoot {
 
     public DataRoot() {
         storage = EmbeddedStorage.start(this);
+        this.players = new ArrayList<>();
+        this.matches = new ArrayList<>();
+        this.games = new ArrayList<>();
     }
 
     private List<Player> players;

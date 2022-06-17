@@ -1,21 +1,23 @@
 package de.bkhennef.ie21a.cc.core.entities;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 public class Player {
 
     private final String name;
-    private transient List<Match> matches;
+
+    private transient List<Match> matches = new ArrayList<>();
+
     private List<Badge> badges = new ArrayList<>();
+
     private long totalWins;
 
     public Player(String name) {
-        Objects.requireNonNull(name);
-        if (name.isBlank() || name.isEmpty()) {
-            throw new IllegalArgumentException("Player name must contain characters");
-        }
         this.name = name.strip();
     }
 
