@@ -18,7 +18,7 @@
                     <input type="button" onclick="addPlayer()" id="input_sendNewPlayerName" value="Hinzufügen">
                 </div>
             </div>
-            <div>
+            <div class="class_mid">
                 class_mid
             </div>
             <div class="class_left">
@@ -61,7 +61,7 @@
         var totalWins; //int
         
         $.ajax
-        ({        //172.16.7.    
+        ({    
             type: 'GET',
             url: 'http://10.10.0.147:7777/players',
             contentType : 'application/json',
@@ -83,15 +83,16 @@
 
                 //Loop response array
                 let list = document.getElementById("playerList");
-
+                var listText;
+                //Create checkbox and label list of players
                 jsonObj.forEach(player => {
                     let li = document.createElement("li");
-
-                    li.innerText = player.name;
+                    listText = player.name + " [" + player.totalWins + "]";
+                    
+                    li.innerText = listText;
 
                     list.appendChild(li);
                     allPlayers.push(player);
-                
 
                     console.log("\njsonObj.name: ")
                     console.log(player.name);
@@ -108,7 +109,6 @@
                     label.appendChild(checkbox);
                     label.appendChild(description);
 
-                    // add the label element to your div
                     document.getElementById('cb_playerList').appendChild(label);
                 });  
             },
@@ -128,34 +128,41 @@
     }
 
     function addPlayer() {
-        document.getElementById("input_newPlayerName").style.visibility = "hidden"
-        document.getElementById("input_sendNewPlayerName").style.visibility = "hidden"
+        var input;
+        
+        input = document.getElementById("input_newPlayerName").value;
+        console.log(input);
+        
+        document.getElementById("input_newPlayerName").style.visibility = "hidden";
+        document.getElementById("input_sendNewPlayerName").style.visibility = "hidden";
         
         //Send data to server
-        $.ajax
-        ({            
-            type: 'GET',
-            url: 'http://localhost:10000/newPlayer',
-            contentType : 'application/json',
-            dataType : 'json',
-            headers: {"Accepts": "text/plain; charset=utf-8"},
-            data: {
-                "name": name,
-                "wins": 0,
+        console.log("addPlayer()");
+        $.ajax({                    
+            url: 'http://10.10.0.147:7777/newPlayer',     
+            type: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             },
 
-            success:  function(data)
+            contentType: 'appliation/json',
+            dataType: 'json',  
+            data : {
+                "name" : 'input'
+            },
+
+
+            success: function(data)         
             {
                 console.log(data);
             },
 
             error: function(error)
             {
-                console.log("error");
-            }         
-        })
-
-
+                console.log("Error: " + error);
+            }
+        });  
     }
 
     function newMatch() {
@@ -164,36 +171,29 @@
 
     function addMatch() {
         document.getElementById("div_newMatch").style.visibility = "hidden"
-        //Send data to server
-    }
 
-    //DEBUG
-    function send()
-    {
+        console.log(JSON.stringify(allPlayers));
+
         console.log("Send()");
-        $.ajax
-        ({            
-            type: 'GET',
-            url: 'http://10.10.0.147:7777/match',
-            contentType : 'application/json',
-            dataType : 'json',
-            headers: {"Accepts": "text/plain; charset=utf-8"},
-            data: {
-                "id": 1,
-                "name": "emil",
-                "data3": "value3",
-            },
+        $.ajax({                    
+            url: 'http://10.10.0.147:7777/newMatch',     
+            type: 'POST',
 
-            success:  function(data)
+            data : {
+                matchID : input,
+                players:  123
+            },
+            dataType: 'json',                   
+            success: function(data)         
             {
                 console.log(data);
             },
 
-            error: function()
+            error: function(error)
             {
-                console.log("error");
-            }         
-        })
+                console.log(error);
+            }
+        });    
     }
 </script>
 
