@@ -19,9 +19,7 @@ public class Game {
 
     public final long maxPlayers;
 
-    public static final List<Game> availableGames = initAvailableGames();
-
-    private Game(String name, long minPlayers, long maxPlayers) {
+    public Game(String name, long minPlayers, long maxPlayers) {
         Objects.requireNonNull(name);
         if (name.isBlank() || name.isEmpty()) {
             throw new IllegalArgumentException("Name can't be blank.");
@@ -35,14 +33,6 @@ public class Game {
             throw new IllegalArgumentException("Maximum Number of Players must be <=1.");
         }
         this.maxPlayers = maxPlayers;
-    }
-
-    private static List<Game> initAvailableGames() {
-        List<Game> games = new ArrayList<>();
-        games.add(new Game("FIFA", 1, 7));
-        games.add(new Game("Mario Kart", 1, 8));
-        games.add(new Game("Minecraft", 1, 8));
-        return Collections.unmodifiableList(games);
     }
 
 }

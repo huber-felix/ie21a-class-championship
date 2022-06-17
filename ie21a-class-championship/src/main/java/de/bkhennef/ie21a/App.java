@@ -3,10 +3,15 @@ package de.bkhennef.ie21a;
 import com.google.gson.Gson;
 
 import de.bkhennef.ie21a.cc.core.entities.Badge;
+import de.bkhennef.ie21a.cc.core.entities.Game;
 import de.bkhennef.ie21a.cc.core.entities.Player;
 import de.bkhennef.ie21a.cc.database.DataRoot;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Hello world!
@@ -35,9 +40,13 @@ public class App
         Player player2 = new Player("Spieler 2", 2);
         player2.getBadges().add(Badge.BEGINNERS_LUCK);
         player1.getBadges().add(Badge.LOOSER);
-
         dataRoot.addPlayer(player1);
         dataRoot.addPlayer(player2);
+
+        dataRoot.addGame(new Game("FIFA", 1, 7));
+        dataRoot.addGame(new Game("Mario Kart", 1, 8));
+        dataRoot.addGame(new Game("Minecraft", 1, 8));
+
 
         app.post("/newPlayer/", ctx -> {
             Player player = new Gson().fromJson(ctx.body(), Player.class);
@@ -52,6 +61,10 @@ public class App
         });
 
 
+        app.get("/games", ctx -> {
+            String json = new Gson().toJson(dataRoot.getGames());
+            ctx.html(json);
+        });
 
 
     }
