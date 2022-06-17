@@ -38,7 +38,5 @@ public class KOMatchPlan implements MatchPlan {
         return rounds;
     }
 
-    public KORound nextRound() {
 
-    }
 }
