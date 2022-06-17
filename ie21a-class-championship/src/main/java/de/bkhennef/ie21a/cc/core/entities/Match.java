@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class Match {
 
+    private long id;
     private List<Player> winners;
 
     private final Game game;
@@ -22,7 +23,8 @@ public class Match {
 
     private String cancelledReason;
 
-    public Match(List<Player> players, Game game, boolean official) {
+    public Match(List<Player> players, Game game, boolean official, long id) {
+        this.id = id;
         this.status = MatchStatus.NOT_STARTED;
         Objects.requireNonNull(game);
         this.game = game;
@@ -32,6 +34,10 @@ public class Match {
         this.players = players;
         winners = new ArrayList<>();
         this.official = official;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public List<Player> getWinners() {

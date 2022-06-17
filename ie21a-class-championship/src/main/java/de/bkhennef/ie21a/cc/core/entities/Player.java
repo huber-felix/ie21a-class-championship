@@ -9,6 +9,8 @@ import java.util.Objects;
 
 public class Player {
 
+    private long id;
+
     private final String name;
 
     private transient List<Match> matches = new ArrayList<>();
@@ -17,8 +19,18 @@ public class Player {
 
     private long totalWins;
 
-    public Player(String name) {
+
+    public Player(String name, long id) {
+        this.id = id;
+        Objects.requireNonNull(name);
+        if (name.isBlank() || name.isEmpty()) {
+            throw new IllegalArgumentException("Player name must contain characters");
+        }
         this.name = name.strip();
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getName() {
