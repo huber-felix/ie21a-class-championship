@@ -9,7 +9,7 @@ import de.bkhennef.ie21a.cc.core.entities.Player;
 
 public class KOMatchPlan implements MatchPlan {
     
-    private List<KORound> rounds;
+    private List<KORound> rounds = new ArrayList<>();
     
     public KOMatchPlan(List<Player> players, Game game, boolean isOfficial) {
         rounds.add(new KORound(players, game, isOfficial));
@@ -18,10 +18,10 @@ public class KOMatchPlan implements MatchPlan {
     @Override
     public List<Match> getMatches() {
         List<Match> result = new ArrayList<>();
-            for(KORound round : rounds) {
-                result.addAll(round.getMatches());
-            }
-            return result;
+        for(KORound round : rounds) {
+            result.addAll(round.getMatches());
+        }
+        return result;
     }
 
     /*

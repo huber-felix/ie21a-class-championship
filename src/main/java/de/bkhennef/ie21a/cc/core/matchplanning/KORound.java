@@ -9,7 +9,7 @@ import de.bkhennef.ie21a.cc.core.entities.Player;
 
 public class KORound {
 
-    private List<Match> matches = new ArrayList();
+    private List<Match> matches = new ArrayList<>();
 
     public KORound(List<Player> players, Game game, boolean isOfficial) {
         Collections.shuffle(players);
