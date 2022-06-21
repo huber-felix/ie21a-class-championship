@@ -62,13 +62,13 @@ public class App
 
         app.get("/players", ctx -> {
             String json = new Gson().toJson(dataRoot.getPlayers());
-            ctx.html(json);
+            ctx.json(json);
         });
 
 
         app.get("/games", ctx -> {
             String json = new Gson().toJson(dataRoot.getGames());
-            ctx.html(json);
+            ctx.json(json);
         });
 
 
