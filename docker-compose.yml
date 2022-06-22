@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  ie21a-class-championship-backend:
+    image: ie21a-class-championship-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:7777"
+    volumes:
+      - ./storage:/opt/ie21a-class-championship/storage:rw
+
