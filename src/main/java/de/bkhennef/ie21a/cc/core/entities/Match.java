@@ -1,12 +1,11 @@
 package de.bkhennef.ie21a.cc.core.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Match {
@@ -20,7 +19,6 @@ public class Match {
 
     private MatchStatus status;
 
-    private boolean official;
     private Instant startTime = Instant.now();
     private Instant finishTime = Instant.now();
 
@@ -31,8 +29,7 @@ public class Match {
 
     }
 
-    public Match(List<Player> players, Game game, boolean official, long id) {
-        this.id = id;
+    public Match(List<Player> players, Game game) {
         this.status = MatchStatus.NOT_STARTED;
         Objects.requireNonNull(game);
         this.game = game;
@@ -41,7 +38,6 @@ public class Match {
         }
         winners = new ArrayList<>();
         this.players = players;
-        this.official = official;
     }
 
     public Instant getStartTime() {
@@ -107,8 +103,9 @@ public class Match {
         return cancelledReason;
     }
 
-    public boolean isOfficial() {
-        return official;
+    public Match withId(long newId) {
+        this.id = newId;
+        return this;
     }
 
 }

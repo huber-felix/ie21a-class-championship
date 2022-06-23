@@ -3,6 +3,7 @@ package de.bkhennef.ie21a.cc.database;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import de.bkhennef.ie21a.cc.core.entities.Game;
 import de.bkhennef.ie21a.cc.core.entities.Match;
 import de.bkhennef.ie21a.cc.core.entities.Player;
@@ -37,22 +38,43 @@ public class DataRoot {
         return games;
     }
 
+    public Optional<Player> getPlayerById(long id) {
+        return players.stream()
+            .filter(p -> {
+                return p.getId() == id;
+            })
+            .findFirst();
+    }
+
+    public Optional<Match> getMatchById(long id) {
+        return matches.stream()
+            .filter(p -> {
+                return p.getId() == id;
+            })
+            .findFirst();
+    }
+
     public void addMatch(Match match) {
         try {
             Objects.requireNonNull(match);
             matches.add(match);
-            storage.store(match);
+            matches.add(match.withId(nextMatchId()));
+            storage.store(matches);
         } catch (NullPointerException e) {
             System.out.println("Match could not be added. Was null. " + e);
         }
 
     }
 
+    private long nextMatchId() {
+        return matches.size();
+    }
+
     public void addGame(Game game) {
         try {
             Objects.requireNonNull(game);
             games.add(game);
-            storage.store(game);
+            storage.store(games);
         } catch (NullPointerException e) {
             System.out.println("Game could not be added. Was null. " + e);
         }
@@ -66,5 +88,9 @@ public class DataRoot {
         } catch (NullPointerException e) {
             System.out.println("Player could not be added. Was null. " + e);
         }
+    }
+
+    public void setStorage(EmbeddedStorageManager storage) {
+        this.storage = storage;
     }
 }
