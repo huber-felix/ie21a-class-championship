@@ -6,25 +6,24 @@ import java.util.Objects;
 import de.bkhennef.ie21a.cc.core.entities.Game;
 import de.bkhennef.ie21a.cc.core.entities.Match;
 import de.bkhennef.ie21a.cc.core.entities.Player;
-import one.microstream.storage.embedded.types.EmbeddedStorage;
 import one.microstream.storage.embedded.types.EmbeddedStorageManager;
 
 public class DataRoot {
 
-    EmbeddedStorageManager storage;
+    private transient EmbeddedStorageManager storage;
 
-    public DataRoot() {
-        storage = EmbeddedStorage.start(this);
+    public DataRoot(EmbeddedStorageManager storage) {
+        this.storage = storage;
         this.players = new ArrayList<>();
         this.matches = new ArrayList<>();
         this.games = new ArrayList<>();
     }
 
-    private List<Player> players;
+    public List<Player> players;
 
-    private List<Match> matches;
+    public List<Match> matches;
 
-    private List<Game> games;
+    public List<Game> games;
 
     public List<Player> getPlayers() {
         return players;
@@ -45,7 +44,7 @@ public class DataRoot {
         } catch (NullPointerException e) {
             System.out.println("Match could not be added. Was null. " + e);
         }
-        storage.store(matches);
+
     }
 
     public void addGame(Game game) {
@@ -53,21 +52,21 @@ public class DataRoot {
             Objects.requireNonNull(game);
             if (games.contains(game)) {
                 System.out.println("Game could not be added. Already exists");
+                games.add(game);
             }
-            games.add(game);
         } catch (NullPointerException e) {
             System.out.println("Game could not be added. Was null. " + e);
         }
-        storage.store(matches);
+
     }
 
     public void addPlayer(Player player) {
         try {
             Objects.requireNonNull(player);
             players.add(player);
+            storage.store(players);
         } catch (NullPointerException e) {
             System.out.println("Player could not be added. Was null. " + e);
         }
-        storage.store(games);
     }
 }
