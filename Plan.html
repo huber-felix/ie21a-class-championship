@@ -166,54 +166,63 @@
     }
 
     function loadListPlayers(data) {
-    //Delete list elements
-    deleteList("lbl_playerList");
-    
-    //Delete checkbox list elements
-    deleteList("cb_playerList");
-        
-    //reset array with all players
-    allPlayers = [];
+        //Delete list elements
+        deleteList("lbl_playerList");
 
-    //Convert data before parsing to JSON obj
-    convertedData = JSON.stringify(data);
+        //Delete checkbox list elements
+        deleteList("cb_playerList");
+            
+        //reset array with all players
+        allPlayers = [];
 
-    //Parse to JSON obj
-    jsonObj = JSON.parse(convertedData);
+        //Convert data before parsing to JSON obj
+        convertedData = JSON.stringify(data);
 
-    //Loop response array
-    let list = document.getElementById("lbl_playerList");
-    var listText;
+        //Parse to JSON obj
+        jsonObj = JSON.parse(convertedData);
 
-    //Create checkbox and label list of players
-    jsonObj.forEach(player => {
-        let li = document.createElement("li");
-        listText = player.name + " [" + player.totalWins + "]";
-        
-        li.innerText = listText;
+        //Loop response array
+        let list = document.getElementById("lbl_playerList");
+        var listText;
+        var listBadges = [];
 
-        list.appendChild(li);
+        //Create checkbox and label list of players
+        jsonObj.forEach(player => {
+            let li = document.createElement("li");
 
-        //Create object for array
-        var arrayObj = {
-            name: player.name,
-            id: player.id
-        }
-        //Add to array
-        allPlayers.push(arrayObj);
+            player.badges.forEach( badge => {
+                listBadges.push(badge);
+            })
 
-        //Create player checkbox list
-        var label = document.createElement("label");
-        var description = document.createTextNode(player.name);
-        var checkbox = document.createElement("input");
+            listText = player.name + " [" + player.totalWins + "] {" + player.badges + "}";
+            
+            li.innerText = listText;
 
-        checkbox.type = "checkbox";    
-        checkbox.value = player.id;
+            list.appendChild(li);
 
-        label.appendChild(checkbox);
-        label.appendChild(description);
-        document.getElementById('cb_playerList').appendChild(label);
-    });  
+            //Create object for array
+            var arrayObj = {
+                name: player.name,
+                id: player.id
+            }
+
+            //Add to array
+            allPlayers.push(arrayObj);
+
+            //Create player checkbox list
+            var label = document.createElement("label");
+            var description = document.createTextNode(player.name);
+            var checkbox = document.createElement("input");
+
+            checkbox.type = "checkbox";    
+            checkbox.value = player.id;
+            checkbox.id = "cb_name_player";
+            checkbox.name = player.name;
+
+            label.appendChild(checkbox);
+            label.appendChild(description);
+            document.getElementById('cb_playerList').appendChild(label);
+        });  
 }
 
     function loadListMatches(data) {
@@ -230,11 +239,33 @@
 
             //Create match div element
             var div = document.createElement("div");
-            var matchName = document.createTextNode(match.game.name);
+            var matchName = document.createElement("a");
             var button = document.createElement("input");
 
             button.type = "button";
-            button.value = "submit";
+            button.value = "Send";
+            
+            matchName.innerHTML = match.game.name;
+            matchName.value = match.game.name;
+
+            div.id = match.id;
+
+            console.log("div.id:");
+            console.log(div.id);
+
+            button.id = div.id;
+            button.onclick = function (div) {
+                //get parent element
+                var parent = this.parentNode;
+
+                //get id
+                console.log(parent.id);
+
+                //get checked boxes
+
+
+                //ajax with id and players
+            };
 
             div.appendChild(button);
             div.appendChild(matchName)
@@ -328,13 +359,42 @@
 
     function addMatch() {
         var currGame;
-        var arrayPlayers;
+        var arrayPlayers = [];
+
         arrayPlayers = JSON.stringify(allPlayers);
 
+           
+        //uncheck all cbs
+        documents.getElementsByTagName("input").checked = "false";
+
+        //fill array with checkbox.value
+        var checkboxes = document.querySelectorAll('input[name=myCheckboxes]:checked');
+        console.log("cb:")
+        console.log(checkboxes);
+
+        checkboxes.forEach( checkbox => {
+            if (checkbox.checked) {
+                console.log("CB:" + checkbox.innerHTML);
+                arrayPlayers.push(checkbox.value);
+            }
+        })
+
         document.getElementById("div_newMatch").style.visibility = "hidden"
-        
         currGame = document.getElementById("select_gamesList").value;
         
+        console.log(arrayPlayers);
+        /*====
+        let json = JSON.stringify({
+            "game": {
+                "name": currGame
+                },
+
+                "players": [{
+                    "name": "Spieler 1",
+                }]
+            });
+        ====*/
+
         $.ajax({                    
             url: 'http://'+serverIP+':7777/newMatch',     
             type: 'POST',
@@ -345,9 +405,11 @@
 
             contentTypes: 'appliation/json',
             dataType: 'json',  
-            data : JSON.stringify({
-                "game" : currGame,
-                "allPlayers" : arrayPlayers
+            data: JSON.stringify({
+                "game" : {
+                    name: currGame
+                },
+                "players" : arrayPlayers
             }),
 
             success: function(data)         
@@ -367,6 +429,14 @@
 <style>
     body {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    input {
+        margin: 5px;
+    }
+
+    select {
+        margin: 5px;
     }
 
     .class_gridContainer {
