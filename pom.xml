@@ -41,11 +41,6 @@
       <version>1.7.36</version>
     </dependency>
     <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.9.0</version>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>2.13.3</version>
@@ -72,12 +67,6 @@
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jdk8</artifactId>
       <version>2.13.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fatboyindustrial.gson-javatime-serialisers</groupId>
-      <artifactId>gson-javatime-serialisers</artifactId>
-      <version>1.1.1</version>
     </dependency>
 
   </dependencies>
