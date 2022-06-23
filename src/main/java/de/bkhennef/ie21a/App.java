@@ -1,7 +1,6 @@
 package de.bkhennef.ie21a;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import de.bkhennef.ie21a.cc.core.entities.Badge;
 import de.bkhennef.ie21a.cc.core.entities.Game;
 import de.bkhennef.ie21a.cc.core.entities.Match;
@@ -9,6 +8,8 @@ import de.bkhennef.ie21a.cc.core.entities.Player;
 import de.bkhennef.ie21a.cc.database.DataRoot;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
+import one.microstream.storage.embedded.types.EmbeddedStorage;
+import one.microstream.storage.embedded.types.EmbeddedStorageManager;
 
 
 
@@ -18,10 +19,22 @@ import io.javalin.http.staticfiles.Location;
  */
 public class App 
 {
-    public static DataRoot dataRoot = new DataRoot();
+
 
     public static void main( String[] args )
     {
+        //INITIATING dataRoot and storage        
+        DataRoot dataRoot;
+        EmbeddedStorageManager storage = EmbeddedStorage.start();
+        if (storage.root() == null) {
+            dataRoot = new DataRoot(storage);
+            storage.setRoot(dataRoot);
+            System.out.println("Setting fresh root");
+        } else {
+            dataRoot = (DataRoot) storage.root();
+            System.out.println("Root was loaded");
+        }
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
 
@@ -81,6 +94,15 @@ public class App
             Match match = mapper.readValue(ctx.body(), Match.class);
             dataRoot.addMatch(match);
             ctx.json(ctx.body());
+        });
+
+        //Shutting down the database at JVM shutdown
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                System.out.println("Storage shutting down");
+                storage.shutdown();
+            }
         });
 
     }
