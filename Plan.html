@@ -3,6 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spielplan</title>
+    <meta charset="utf-8">
 </head>
     <body onload="setI()">
         <meta>
@@ -11,29 +12,23 @@
             <div class="class_right">
                 class_right             
                     <p>Spielerliste: </p>
-                    <ul id="playerList"></ul>             
+                    <ul id="lbl_playerList"></ul>             
                     <input type="button" onclick="newPlayer()" value="Neuer Spieler">
                 <div class="class_hidden">
                     <input type="text" id="input_newPlayerName">
                     <input type="button" onclick="addPlayer()" id="input_sendNewPlayerName" value="Hinzufügen">
                 </div>
             </div>
-            <div class="class_mid">
+            <div class="class_mid" id="list_matches">
                 class_mid
             </div>
             <div class="class_left">
                 class_left
                 <input type="button" onclick="newMatch()" value="Neuer Spielplan">
                 <div class="class_hidden" id="div_newMatch">                    
-                    <div id="cb_playerList">
-
-                    </div>
-                    <select>
-                        <option>Minecraft</option>
-                        <option>Fifa</option>
-                        <option>Mariokart</option>
-                    </select>                
-                    <input type="hidden" id="gameTitle"> <!-- DropdownValue-->
+                    <div id="cb_playerList"></div>
+                    <select id="select_gamesList">
+                    </select>
                     <input type="button" onclick="addMatch()" value="Hinzufügen"> 
                 </div>
             </div>
@@ -44,14 +39,16 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
     var allPlayers = [];
+    var allGames = [];
+    var allMatches = [];
+    var serverIP = '10.10.0.147';
     
     //Get player list (each 60 sec)
-    function setI()
-    {
+    function setI() {
         getData();
-        setInterval(getData, 60000);
+        setInterval(getData, 30000);
     }
-    
+   
     function getData() {
         console.log("Sync data");
 
@@ -60,57 +57,21 @@
         var badges; //string[]
         var totalWins; //int
         
+        //Get "players" list
         $.ajax
         ({    
             type: 'GET',
-            url: 'http://10.10.0.147:7777/players',
+            url: 'http://'+serverIP+':7777/players',
             contentType : 'application/json',
             dataType : 'json',
             headers: {"Accepts": "text/plain; charset=utf-8"},
 
             success:  function(data)
             {
-                console.log("data received: ");
+                console.log("Players: ");
                 console.log(data)
-                //reset array with all players
-                allPlayers = [];
-
-                //Convert data before parsing to JSON obj
-                convertedData = JSON.stringify(data);
-        
-                //Parse to JSON obj
-                jsonObj = JSON.parse(convertedData);
-
-                //Loop response array
-                let list = document.getElementById("playerList");
-                var listText;
-                //Create checkbox and label list of players
-                jsonObj.forEach(player => {
-                    let li = document.createElement("li");
-                    listText = player.name + " [" + player.totalWins + "]";
-                    
-                    li.innerText = listText;
-
-                    list.appendChild(li);
-                    allPlayers.push(player);
-
-                    console.log("\njsonObj.name: ")
-                    console.log(player.name);
-
-                    //Create player checkbox list
-                    var label = document.createElement("label");
-                    var description = document.createTextNode(player.name);
-                    var checkbox = document.createElement("input");
-
-                    checkbox.type = "checkbox";    
-                    checkbox.name = player.name;
-                    checkbox.value = player.name;
-
-                    label.appendChild(checkbox);
-                    label.appendChild(description);
-
-                    document.getElementById('cb_playerList').appendChild(label);
-                });  
+                loadListPlayers(data);
+                document.getElementById("input_newPlayerName").value = "";
             },
 
             error: function(error)
@@ -119,27 +80,212 @@
 
             }         
         })
+
+        //Get "games" list
+        $.ajax
+        ({    
+            type: 'GET',
+            url: 'http://'+serverIP+':7777/games',
+            contentType : 'application/json',
+            dataType : 'json',
+            headers: {"Accepts": "text/plain; charset=utf-8"},
+
+            success:  function(data)
+            {
+                console.log("Games: ");
+                console.log(data);
+                loadListGames(data);
+            },
+
+            error: function(error)
+            {
+                console.log("error");
+            }         
+        })
+
+        //Get "matches" list
+        $.ajax
+        ({    
+            type: 'GET',
+            url: 'http://'+serverIP+':7777/matches',
+            contentType : 'application/json',
+            dataType : 'json',
+            headers: {"Accepts": "text/plain; charset=utf-8"},
+
+            success:  function(data)
+            {
+                console.log("Matches: ");
+                console.log(data);
+                loadListMatches(data);
+            },
+
+            error: function(error)
+            {
+                console.log("error");
+            }         
+        })
+
+
     }
 
+    function deleteList(listName) {
+        const parent = document.getElementById(listName)
+        while (parent.firstChild) {
+            parent.firstChild.remove()
+        }
+    }
+
+    function loadListGames(data) {
+        //reset array with all games
+        allGames = [];
+
+        //Convert data before parsing to JSON obj
+        convertedData = JSON.stringify(data);
+
+        //Parse to JSON obj
+        jsonObj = JSON.parse(convertedData);
+
+        var list = document.getElementById('select_gamesList');
+
+        //Delete dropdown list items
+        deleteList("select_gamesList");
+
+        //Create dropdown list
+        jsonObj.forEach (game => {
+            var option = document.createElement("option");
+            option.value = game.name;
+            option.name = game.name;
+            option.innerHTML = game.name;
+
+            list.appendChild(option);
+            allGames += game;
+        })                
+
+    }
+
+    function loadListPlayers(data) {
+    //Delete list elements
+    deleteList("lbl_playerList");
+    
+    //Delete checkbox list elements
+    deleteList("cb_playerList");
+        
+    //reset array with all players
+    allPlayers = [];
+
+    //Convert data before parsing to JSON obj
+    convertedData = JSON.stringify(data);
+
+    //Parse to JSON obj
+    jsonObj = JSON.parse(convertedData);
+
+    //Loop response array
+    let list = document.getElementById("lbl_playerList");
+    var listText;
+
+    //Create checkbox and label list of players
+    jsonObj.forEach(player => {
+        let li = document.createElement("li");
+        listText = player.name + " [" + player.totalWins + "]";
+        
+        li.innerText = listText;
+
+        list.appendChild(li);
+        allPlayers.push(player);
+
+        //Create player checkbox list
+        var label = document.createElement("label");
+        var description = document.createTextNode(player.name);
+        var checkbox = document.createElement("input");
+
+        checkbox.type = "checkbox";    
+        checkbox.value = player.id;
+        console.log("player.id: ");
+        console.log(player.id);
+
+        label.appendChild(checkbox);
+        label.appendChild(description);
+        document.getElementById('cb_playerList').appendChild(label);
+    });  
+}
+
+    function loadListMatches(data) {
+        //Delete Matches list
+        deleteList("list_matches");
+
+        //Convert data before parsing to JSON obj
+        convertedData = JSON.stringify(data);
+
+        //Parse to JSON obj
+        jsonObj = JSON.parse(convertedData);
+
+        jsonObj.forEach(match => {
+
+            //Create match div element
+            var div = document.createElement("div");
+            var matchName = document.createTextNode(match.game.name);
+            var button = document.createElement("input");
+
+            button.type = "button";
+            button.value = "submit";
+
+            div.appendChild(button);
+            div.appendChild(matchName)
+
+            //Create cb list with players
+            match.players.forEach (player => {
+                var checkbox = document.createElement("input");
+                
+                //Display player name
+                var description = document.createTextNode(player.name);
+
+                checkbox.type = "checkbox";    
+
+                //Save player ID
+                checkbox.value = player.id;
+
+                div.appendChild(checkbox);
+                div.appendChild(description);
+
+                document.getElementById('list_matches').appendChild(div);
+                allMatches += match;   
+            })
+        });
+}
+
+    //Show or hide input for new player
     function newPlayer() {
-        console.log("Send()");
-        document.getElementById("input_newPlayerName").style.visibility = "visible"
-        document.getElementById("input_sendNewPlayerName").style.visibility = "visible"
+        if (document.getElementById("input_newPlayerName").style.visibility == "hidden") {
+            document.getElementById("input_newPlayerName").style.visibility = "visible"
+            document.getElementById("input_sendNewPlayerName").style.visibility = "visible"
+        }
+        else {
+            document.getElementById("input_newPlayerName").style.visibility = "hidden"
+            document.getElementById("input_sendNewPlayerName").style.visibility = "hidden"
+        }
     }
 
     function addPlayer() {
         var input;
+
         
         input = document.getElementById("input_newPlayerName").value;
         console.log(input);
         
+        if(input == 0)
+        {
+            console.log("input not valid");
+            return;
+        }
+
         document.getElementById("input_newPlayerName").style.visibility = "hidden";
         document.getElementById("input_sendNewPlayerName").style.visibility = "hidden";
         
         //Send data to server
+        //TODO: Send ID not NAME
         console.log("addPlayer()");
         $.ajax({                    
-            url: 'http://10.10.0.147:7777/newPlayer',     
+            url: 'http://'+serverIP+':7777/newPlayer',     
             type: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -148,14 +294,14 @@
 
             contentType: 'appliation/json',
             dataType: 'json',  
-            data : {
-                "name" : 'input'
-            },
-
+            data : JSON.stringify({
+                "name" : input
+            }),
 
             success: function(data)         
             {
                 console.log(data);
+                getData();
             },
 
             error: function(error)
@@ -166,34 +312,53 @@
     }
 
     function newMatch() {
-        document.getElementById("div_newMatch").style.visibility = "visible"
+        if (document.getElementById("div_newMatch").style.visibility == "hidden") {
+            document.getElementById("div_newMatch").style.visibility = "visible";
+        }
+        else {
+            document.getElementById("div_newMatch").style.visibility = "hidden";
+        }
     }
 
     function addMatch() {
+        var currGame;
+        var arrayPlayers;
+        arrayPlayers = JSON.stringify(allPlayers);
+
         document.getElementById("div_newMatch").style.visibility = "hidden"
+        
+        currGame = document.getElementById("select_gamesList").value;
 
-        console.log(JSON.stringify(allPlayers));
+        console.log("arrayPlayers:")
+        console.log(arrayPlayers);
+        console.log("NewMatch()");
 
-        console.log("Send()");
         $.ajax({                    
-            url: 'http://10.10.0.147:7777/newMatch',     
+            url: 'http://'+serverIP+':7777/newMatch',     
             type: 'POST',
-
-            data : {
-                matchID : input,
-                players:  123
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             },
-            dataType: 'json',                   
+
+            contentTypes: 'appliation/json',
+            dataType: 'json',  
+            data : JSON.stringify({
+                "game" : currGame,
+                "allPlayers" : allPlayers
+            }),
+
             success: function(data)         
             {
                 console.log(data);
+                getData();
             },
 
             error: function(error)
             {
-                console.log(error);
+                console.log("Error: " + error.status );
             }
-        });    
+        });  
     }
 </script>
 
