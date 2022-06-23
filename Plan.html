@@ -38,7 +38,11 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
-    var allPlayers = [];
+    var player = {
+        name : "",
+        id : "",
+    }
+    var allPlayers = [player];
     var allGames = [];
     var allMatches = [];
     var serverIP = '10.10.0.147';
@@ -191,7 +195,14 @@
         li.innerText = listText;
 
         list.appendChild(li);
-        allPlayers.push(player);
+
+        //Create object for array
+        var arrayObj = {
+            name: player.name,
+            id: player.id
+        }
+        //Add to array
+        allPlayers.push(arrayObj);
 
         //Create player checkbox list
         var label = document.createElement("label");
@@ -200,8 +211,6 @@
 
         checkbox.type = "checkbox";    
         checkbox.value = player.id;
-        console.log("player.id: ");
-        console.log(player.id);
 
         label.appendChild(checkbox);
         label.appendChild(description);
@@ -282,7 +291,6 @@
         document.getElementById("input_sendNewPlayerName").style.visibility = "hidden";
         
         //Send data to server
-        //TODO: Send ID not NAME
         console.log("addPlayer()");
         $.ajax({                    
             url: 'http://'+serverIP+':7777/newPlayer',     
@@ -328,11 +336,7 @@
         document.getElementById("div_newMatch").style.visibility = "hidden"
         
         currGame = document.getElementById("select_gamesList").value;
-
-        console.log("arrayPlayers:")
-        console.log(arrayPlayers);
-        console.log("NewMatch()");
-
+        
         $.ajax({                    
             url: 'http://'+serverIP+':7777/newMatch',     
             type: 'POST',
@@ -345,7 +349,7 @@
             dataType: 'json',  
             data : JSON.stringify({
                 "game" : currGame,
-                "allPlayers" : allPlayers
+                "allPlayers" : arrayPlayers
             }),
 
             success: function(data)         
@@ -376,15 +380,18 @@
     .class_right
     {
         grid-column: 3;
+        grid-row: 1;
     }
 
     .class_mid
     {
         grid-column: 2;
+        grid-row: 1;
     }
 
     .class_left
     {
         grid-column: 1;
+        grid-row: 1;
     }
 </style>
