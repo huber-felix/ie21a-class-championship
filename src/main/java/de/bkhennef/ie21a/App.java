@@ -11,6 +11,7 @@ import io.javalin.http.staticfiles.Location;
 import one.microstream.storage.embedded.types.EmbeddedStorage;
 import one.microstream.storage.embedded.types.EmbeddedStorageManager;
 
+import java.util.List;
 
 
 /**
@@ -61,8 +62,7 @@ public class App
         dataRoot.addGame(new Game("Mario Kart", 1, 8));
         dataRoot.addGame(new Game("Minecraft", 1, 8));
 
-
-        Match match1 = new Match(dataRoot.getPlayers(), dataRoot.getGames().get(0), true, 1);
+        Match match1 = new Match(dataRoot.getPlayers(), dataRoot.getGames().get(0));
         dataRoot.addMatch(match1);
 
 
@@ -95,6 +95,16 @@ public class App
             dataRoot.addMatch(match);
             ctx.json(ctx.body());
         });
+
+
+        app.post("/editMatch", ctx -> {
+            Match matchData = mapper.readValue(ctx.body(), Match.class);
+
+            //get match by id and replace it with matchData
+
+            ctx.json(ctx.body());
+        });
+
 
         //Shutting down the database at JVM shutdown
         Runtime.getRuntime().addShutdownHook(new Thread() {
