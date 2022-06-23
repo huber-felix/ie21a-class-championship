@@ -1,19 +1,22 @@
 package de.bkhennef.ie21a.cc.core.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Match {
 
     private long id;
     private List<Player> winners = new ArrayList<>();
 
-    private final Game game;
+    private Game game = new Game();
 
-    private final List<Player> players = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
 
     private MatchStatus status;
 
@@ -22,6 +25,11 @@ public class Match {
     private Instant finishTime = Instant.now();
 
     private String cancelledReason;
+
+
+    public Match(){
+
+    }
 
     public Match(List<Player> players, Game game, boolean official, long id) {
         this.id = id;
@@ -32,7 +40,16 @@ public class Match {
             throw new IllegalArgumentException("There is no match if there are no players");
         }
         winners = new ArrayList<>();
+        this.players = players;
         this.official = official;
+    }
+
+    public Instant getStartTime() {
+        return startTime;
+    }
+
+    public Instant getFinishTime() {
+        return finishTime;
     }
 
     public long getId() {
@@ -41,6 +58,10 @@ public class Match {
 
     public List<Player> getWinners() {
         return (winners);
+    }
+
+    public List<Player> getPlayers() {
+        return (players);
     }
 
     public Game getGame() {

@@ -10,7 +10,7 @@ public class Player {
 
     private long id;
 
-    private final String name;
+    private String name;
 
     private transient List<Match> matches = new ArrayList<>();
 
@@ -18,6 +18,8 @@ public class Player {
 
     private long totalWins;
 
+    public Player(){
+    }
 
     public Player(String name, long id) {
         this.id = id;

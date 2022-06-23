@@ -13,11 +13,16 @@ import java.util.Objects;
  */
 public class Game {
 
-    public final String name;
+    public String name;
 
-    public final long minPlayers;
+    public long minPlayers;
 
-    public final long maxPlayers;
+    public long maxPlayers;
+
+
+    public Game(){
+
+    }
 
     public Game(String name, long minPlayers, long maxPlayers) {
         Objects.requireNonNull(name);

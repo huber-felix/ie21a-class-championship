@@ -1,7 +1,6 @@
 package de.bkhennef.ie21a;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import de.bkhennef.ie21a.cc.core.entities.Badge;
 import de.bkhennef.ie21a.cc.core.entities.Game;
@@ -11,9 +10,7 @@ import de.bkhennef.ie21a.cc.database.DataRoot;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+
 
 /**
  * Hello world!
@@ -25,7 +22,6 @@ public class App
 
     public static void main( String[] args )
     {
-
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
 
@@ -53,37 +49,39 @@ public class App
         dataRoot.addGame(new Game("Minecraft", 1, 8));
 
 
+        Match match1 = new Match(dataRoot.getPlayers(), dataRoot.getGames().get(0), true, 1);
+        dataRoot.addMatch(match1);
+
+
         app.post("/newPlayer/", ctx -> {
-            Player player = new Gson().fromJson(ctx.body(), Player.class);
+            Player player = mapper.readValue(ctx.body(), Player.class);
             dataRoot.addPlayer(player);
             ctx.json(ctx.body());
         });
 
 
         app.get("/players", ctx -> {
-            String json = new Gson().toJson(dataRoot.getPlayers());
+            String json = mapper.writeValueAsString(dataRoot.getPlayers());
             ctx.json(json);
         });
 
 
         app.get("/games", ctx -> {
-            String json = new Gson().toJson(dataRoot.getGames());
+            String json = mapper.writeValueAsString(dataRoot.getGames());
+            ctx.json(json);
+        });
+
+        app.get("/matches", ctx -> {
+            String json = mapper.writeValueAsString(dataRoot.getMatches());
             ctx.json(json);
         });
 
 
-
         app.post("/newMatch", ctx -> {
-
-
-           // Match match = new Match(dataRoot.getPlayers(), dataRoot.getGames().get(0), true, 1);
-          //  ctx.json(match);
-
-            Match match = new Gson().fromJson(ctx.body(), Match.class);
+            Match match = mapper.readValue(ctx.body(), Match.class);
             dataRoot.addMatch(match);
             ctx.json(ctx.body());
         });
-
 
     }
 }
