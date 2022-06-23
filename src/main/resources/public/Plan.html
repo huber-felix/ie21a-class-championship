@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IE-21-A Spielplan</title>
+    <meta charset="utf-8">
+</head>
+    <body onload="setI()">
+        <meta>
+        <h1>Spielplan</h1>
+        <div class="class_gridContainer">
+            <div class="class_right">
+                    <p>Spielerliste </p>
+                    <ul id="lbl_playerList"></ul>             
+                    <input type="button" onclick="newPlayer()" value="Neuer Spieler">
+                <div class="class_hidden">
+                    <input type="text" id="input_newPlayerName">
+                    <input type="button" onclick="addPlayer()" id="input_sendNewPlayerName" value="Hinzufügen">
+                </div>
+            </div>
+            <div class="class_mid" id="list_matches">
+                <p>Matchliste</p>
+            </div>
+            <div class="class_left">
+                <p>Spielplan erstellen</p>
+                <input type="button" onclick="newMatch()" value="Neuer Spielplan">
+                <div class="class_hidden" id="div_newMatch">                    
+                    <div id="cb_playerList"></div>
+                    <select id="select_gamesList">
+                    </select>
+                    <input type="button" onclick="addMatch()" value="Hinzufügen"> 
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    var player = {
+        name : "",
+        id : "",
+    }
+    var allPlayers = [player];
+    var allGames = [];
+    var allMatches = [];
+    var serverIP = '10.10.0.147';
+    
+    //Get player list (each 60 sec)
+    function setI() {
+        console.clear();
+        getData();
+        setInterval(getData, 30000);
+    }
+   
+    function getData() {
+        console.log("Sync data");
+
+        var jsonObj;
+        var name; //string
+        var badges; //string[]
+        var totalWins; //int
+        
+        //Get "players" list
+        $.ajax
+        ({    
+            type: 'GET',
+            url: 'http://'+serverIP+':7777/players',
+            contentType : 'application/json',
+            dataType : 'json',
+            headers: {"Accepts": "text/plain; charset=utf-8"},
+
+            success:  function(data)
+            {
+                console.log("Players: ");
+                console.log(data)
+                loadListPlayers(data);
+                document.getElementById("input_newPlayerName").value = "";
+            },
+
+            error: function(error)
+            {
+                console.log("error");
+
+            }         
+        })
+
+        //Get "games" list
+        $.ajax
+        ({    
+            type: 'GET',
+            url: 'http://'+serverIP+':7777/games',
+            contentType : 'application/json',
+            dataType : 'json',
+            headers: {"Accepts": "text/plain; charset=utf-8"},
+
+            success:  function(data)
+            {
+                console.log("Games: ");
+                console.log(data);
+                loadListGames(data);
+            },
+
+            error: function(error)
+            {
+                console.log("error");
+            }         
+        })
+
+        //Get "matches" list
+        $.ajax
+        ({    
+            type: 'GET',
+            url: 'http://'+serverIP+':7777/matches',
+            contentType : 'application/json',
+            dataType : 'json',
+            headers: {"Accepts": "text/plain; charset=utf-8"},
+
+            success:  function(data)
+            {
+                console.log("Matches: ");
+                console.log(data);
+                loadListMatches(data);
+            },
+
+            error: function(error)
+            {
+                console.log("error");
+            }         
+        })
+    }
+
+    function deleteList(listName) {
+        const parent = document.getElementById(listName)
+        while (parent.firstChild) {
+            parent.firstChild.remove()
+        }
+    }
+
+    function loadListGames(data) {
+        //reset array with all games
+        allGames = [];
+
+        //Convert data before parsing to JSON obj
+        convertedData = JSON.stringify(data);
+
+        //Parse to JSON obj
+        jsonObj = JSON.parse(convertedData);
+
+        var list = document.getElementById('select_gamesList');
+
+        //Delete dropdown list items
+        deleteList("select_gamesList");
+
+        //Create dropdown list
+        jsonObj.forEach (game => {
+            var option = document.createElement("option");
+            option.value = game.name;
+            option.name = game.name;
+            option.innerHTML = game.name;
+
+            list.appendChild(option);
+            allGames += game;
+        })                
+
+    }
+
+    function loadListPlayers(data) {
+        //Delete list elements
+        deleteList("lbl_playerList");
+
+        //Delete checkbox list elements
+        deleteList("cb_playerList");
+            
+        //reset array with all players
+        allPlayers = [];
+
+        //Convert data before parsing to JSON obj
+        convertedData = JSON.stringify(data);
+
+        //Parse to JSON obj
+        jsonObj = JSON.parse(convertedData);
+
+        //Loop response array
+        let list = document.getElementById("lbl_playerList");
+        var listText;
+        var listBadges = [];
+
+        //Create checkbox and label list of players
+        jsonObj.forEach(player => {
+            let li = document.createElement("li");
+
+            player.badges.forEach( badge => {
+                listBadges.push(badge);
+            })
+
+            listText = player.name + " [" + player.totalWins + "] {" + player.badges + "}";
+            
+            li.innerText = listText;
+
+            list.appendChild(li);
+
+            //Create object for array
+            var arrayObj = {
+                name: player.name,
+                id: player.id
+            }
+
+            //Add to array
+            allPlayers.push(arrayObj);
+
+            //Create player checkbox list
+            var label = document.createElement("label");
+            var description = document.createTextNode(player.name);
+            var checkbox = document.createElement("input");
+
+            checkbox.type = "checkbox";    
+            checkbox.value = player.id;
+            checkbox.id = "cb_name_player";
+            checkbox.name = player.name;
+
+            label.appendChild(checkbox);
+            label.appendChild(description);
+            document.getElementById('cb_playerList').appendChild(label);
+        });  
+}
+
+    function loadListMatches(data) {
+        //Delete Matches list
+        deleteList("list_matches");
+
+        //Convert data before parsing to JSON obj
+        convertedData = JSON.stringify(data);
+
+        //Parse to JSON obj
+        jsonObj = JSON.parse(convertedData);
+
+        jsonObj.forEach(match => {
+
+            //Create match div element
+            var div = document.createElement("div");
+            var matchName = document.createElement("a");
+            var button = document.createElement("input");
+
+            button.type = "button";
+            button.value = "Send";
+            
+            matchName.innerHTML = match.game.name;
+            matchName.value = match.game.name;
+
+            div.id = match.id;
+
+            console.log("div.id:");
+            console.log(div.id);
+
+            button.id = div.id;
+            button.onclick = function (div) {
+                //get parent element
+                var parent = this.parentNode;
+
+                //get id
+                console.log(parent.id);
+
+                //get checked boxes
+
+
+                //ajax with id and players
+            };
+
+            div.appendChild(button);
+            div.appendChild(matchName)
+
+            //Create cb list with players
+            match.players.forEach (player => {
+                var checkbox = document.createElement("input");
+                
+                //Display player name
+                var description = document.createTextNode(player.name);
+
+                checkbox.type = "checkbox";    
+
+                //Save player ID
+                checkbox.value = player.id;
+
+                div.appendChild(checkbox);
+                div.appendChild(description);
+
+                document.getElementById('list_matches').appendChild(div);
+                allMatches += match;   
+            })
+        });
+}
+
+    //Show or hide input for new player
+    function newPlayer() {
+        if (document.getElementById("input_newPlayerName").style.visibility == "hidden") {
+            document.getElementById("input_newPlayerName").style.visibility = "visible"
+            document.getElementById("input_sendNewPlayerName").style.visibility = "visible"
+        }
+        else {
+            document.getElementById("input_newPlayerName").style.visibility = "hidden"
+            document.getElementById("input_sendNewPlayerName").style.visibility = "hidden"
+        }
+    }
+
+    function addPlayer() {
+        var input;
+
+        
+        input = document.getElementById("input_newPlayerName").value;
+        console.log(input);
+        
+        if(input == 0)
+        {
+            console.log("input not valid");
+            return;
+        }
+
+        document.getElementById("input_newPlayerName").style.visibility = "hidden";
+        document.getElementById("input_sendNewPlayerName").style.visibility = "hidden";
+        
+        //Send data to server
+        console.log("addPlayer()");
+        $.ajax({                    
+            url: 'http://'+serverIP+':7777/newPlayer',     
+            type: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+
+            contentType: 'appliation/json',
+            dataType: 'json',  
+            data : JSON.stringify({
+                "name" : input
+            }),
+
+            success: function(data)         
+            {
+                console.log(data);
+                getData();
+            },
+
+            error: function(error)
+            {
+                console.log("Error: " + error);
+            }
+        });  
+    }
+
+    function newMatch() {
+        if (document.getElementById("div_newMatch").style.visibility == "hidden") {
+            document.getElementById("div_newMatch").style.visibility = "visible";
+        }
+        else {
+            document.getElementById("div_newMatch").style.visibility = "hidden";
+        }
+    }
+
+    function addMatch() {
+        var currGame;
+        var arrayPlayers = [];
+
+        arrayPlayers = JSON.stringify(allPlayers);
+
+           
+        //uncheck all cbs
+        documents.getElementsByTagName("input").checked = "false";
+
+        //fill array with checkbox.value
+        var checkboxes = document.querySelectorAll('input[name=myCheckboxes]:checked');
+        console.log("cb:")
+        console.log(checkboxes);
+
+        checkboxes.forEach( checkbox => {
+            if (checkbox.checked) {
+                console.log("CB:" + checkbox.innerHTML);
+                arrayPlayers.push(checkbox.value);
+            }
+        })
+
+        document.getElementById("div_newMatch").style.visibility = "hidden"
+        currGame = document.getElementById("select_gamesList").value;
+        
+        console.log(arrayPlayers);
+        /*====
+        let json = JSON.stringify({
+            "game": {
+                "name": currGame
+                },
+
+                "players": [{
+                    "name": "Spieler 1",
+                }]
+            });
+        ====*/
+
+        $.ajax({                    
+            url: 'http://'+serverIP+':7777/newMatch',     
+            type: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+
+            contentTypes: 'appliation/json',
+            dataType: 'json',  
+            data: JSON.stringify({
+                "game" : {
+                    name: currGame
+                },
+                "players" : arrayPlayers
+            }),
+
+            success: function(data)         
+            {
+                console.log(data);
+                getData();
+            },
+
+            error: function(error)
+            {
+                console.log("Error: " + error.status );
+            }
+        });  
+    }
+</script>
+
+<style>
+    body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    input {
+        margin: 5px;
+    }
+
+    select {
+        margin: 5px;
+    }
+
+    .class_gridContainer {
+        display: grid;
+        gap: 10px;
+    }
+
+    .class_hidden
+    {
+        visibility: hidden;
+    }
+
+    .class_right
+    {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+    .class_mid
+    {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .class_left
+    {
+        grid-column: 1;
+        grid-row: 1;
+    }
+</style>

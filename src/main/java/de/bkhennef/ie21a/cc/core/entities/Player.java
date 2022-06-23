@@ -21,7 +21,7 @@ public class Player {
     public Player(){
     }
 
-    public Player(String name, long id) {
+    public Player(String name) {
         this.id = id;
         Objects.requireNonNull(name);
         if (name.isBlank() || name.isEmpty()) {
@@ -64,5 +64,10 @@ public class Player {
 
     public void honor(Badge badge) {
         this.badges.add(badge);
+    }
+
+    public Player withId(long newId) {
+        id = newId;
+        return this;
     }
 }

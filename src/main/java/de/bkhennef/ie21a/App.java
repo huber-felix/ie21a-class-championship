@@ -50,8 +50,8 @@ public class App
             ctx.header("Access-Control-Allow-Origin", "*");
         });
 
-        Player player1 = new Player("Spieler 1", 1);
-        Player player2 = new Player("Spieler 2", 2);
+        Player player1 = new Player("Spieler 1");
+        Player player2 = new Player("Spieler 2");
         player2.getBadges().add(Badge.BEGINNERS_LUCK);
         player1.getBadges().add(Badge.LOOSER);
         dataRoot.addPlayer(player1);
@@ -62,7 +62,7 @@ public class App
         dataRoot.addGame(new Game("Minecraft", 1, 8));
 
 
-        Match match1 = new Match(dataRoot.getPlayers(), dataRoot.getGames().get(0), true, 1);
+        Match match1 = new Match(dataRoot.getPlayers(), dataRoot.getGames().get(0));
         dataRoot.addMatch(match1);
 
 

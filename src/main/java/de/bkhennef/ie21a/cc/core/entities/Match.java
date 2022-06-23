@@ -13,7 +13,7 @@ public class Match {
     private long id;
     private List<Player> winners = new ArrayList<>();
 
-    private Game game = new Game();
+    private Game game;;
 
     private List<Player> players = new ArrayList<>();
 

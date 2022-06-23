@@ -1,8 +1,5 @@
 package de.bkhennef.ie21a.cc.core.entities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,11 +15,6 @@ public class Game {
     public long minPlayers;
 
     public long maxPlayers;
-
-
-    public Game(){
-
-    }
 
     public Game(String name, long minPlayers, long maxPlayers) {
         Objects.requireNonNull(name);
