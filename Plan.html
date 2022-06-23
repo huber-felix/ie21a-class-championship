@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spielplan</title>
+    <title>IE-21-A Spielplan</title>
     <meta charset="utf-8">
 </head>
     <body onload="setI()">
@@ -10,8 +10,7 @@
         <h1>Spielplan</h1>
         <div class="class_gridContainer">
             <div class="class_right">
-                class_right             
-                    <p>Spielerliste: </p>
+                    <p>Spielerliste </p>
                     <ul id="lbl_playerList"></ul>             
                     <input type="button" onclick="newPlayer()" value="Neuer Spieler">
                 <div class="class_hidden">
@@ -20,10 +19,10 @@
                 </div>
             </div>
             <div class="class_mid" id="list_matches">
-                class_mid
+                <p>Matchliste</p>
             </div>
             <div class="class_left">
-                class_left
+                <p>Spielplan erstellen</p>
                 <input type="button" onclick="newMatch()" value="Neuer Spielplan">
                 <div class="class_hidden" id="div_newMatch">                    
                     <div id="cb_playerList"></div>
@@ -49,6 +48,7 @@
     
     //Get player list (each 60 sec)
     function setI() {
+        console.clear();
         getData();
         setInterval(getData, 30000);
     }
@@ -128,8 +128,6 @@
                 console.log("error");
             }         
         })
-
-
     }
 
     function deleteList(listName) {
@@ -367,6 +365,10 @@
 </script>
 
 <style>
+    body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
     .class_gridContainer {
         display: grid;
         gap: 10px;
