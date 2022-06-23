@@ -41,6 +41,7 @@ public class DataRoot {
         try {
             Objects.requireNonNull(match);
             matches.add(match);
+            storage.store(match);
         } catch (NullPointerException e) {
             System.out.println("Match could not be added. Was null. " + e);
         }
@@ -50,14 +51,11 @@ public class DataRoot {
     public void addGame(Game game) {
         try {
             Objects.requireNonNull(game);
-            if (games.contains(game)) {
-                System.out.println("Game could not be added. Already exists");
-                games.add(game);
-            }
+            games.add(game);
+            storage.store(game);
         } catch (NullPointerException e) {
             System.out.println("Game could not be added. Was null. " + e);
         }
-
     }
 
     public void addPlayer(Player player) {
